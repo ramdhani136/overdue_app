@@ -1,16 +1,28 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from . import __version__ as app_version
 
 app_name = "overdue_app"
 app_title = "Overdue App"
-app_publisher = "DAS"
-app_description = "Overdue App"
+app_publisher = "chandra-das"
+app_description = "app untuk membatasi jumlah invoice ketika ada overdue dari customer yang sama. contoh diset 1, maka customer tidak bisa lanjut submit untuk berikut - berikutnya ketika masih overdue."
 app_icon = "octicon octicon-file-directory"
-app_color = "grey"
-app_email = "digitalasiasolusindo@gmail.com"
+app_color = "red"
+app_email = "nugraha.chandrasatria@gmail.com"
 app_license = "MIT"
 
 # Includes in <head>
 # ------------------
+
+fixtures = [
+   {"dt": "Custom Field", "filters": [
+        [
+            "fieldname", "in", [
+                "limit_customer_overdue"
+            ]
+        ]
+    ]}
+]
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/overdue_app/css/overdue_app.css"
@@ -19,13 +31,6 @@ app_license = "MIT"
 # include js, css files in header of web template
 # web_include_css = "/assets/overdue_app/css/overdue_app.css"
 # web_include_js = "/assets/overdue_app/js/overdue_app.js"
-
-# include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "overdue_app/public/scss/website"
-
-# include js, css files in header of web form
-# webform_include_js = {"doctype": "public/js/doctype.js"}
-# webform_include_css = {"doctype": "public/css/doctype.css"}
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
@@ -47,6 +52,9 @@ app_license = "MIT"
 #	"Role": "home_page"
 # }
 
+# Website user home page (by function)
+# get_website_user_home_page = "overdue_app.utils.get_home_page"
+
 # Generators
 # ----------
 
@@ -58,12 +66,6 @@ app_license = "MIT"
 
 # before_install = "overdue_app.install.before_install"
 # after_install = "overdue_app.install.after_install"
-
-# Uninstallation
-# ------------
-
-# before_uninstall = "overdue_app.uninstall.before_uninstall"
-# after_uninstall = "overdue_app.uninstall.after_uninstall"
 
 # Desk Notifications
 # ------------------
@@ -83,25 +85,22 @@ app_license = "MIT"
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
-# DocType Class
-# ---------------
-# Override standard doctype classes
-
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
-
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+
+doc_events = {
+	"Delivery Note":{
+		"before_submit":"overdue_app.custom_check_invoice.check_overdue_invoice",
+	},
+	"Sales Invoice":{
+		"before_submit":"overdue_app.custom_check_invoice.check_overdue_invoice",
+	},
+	"Sales Order":{
+		"before_submit":"overdue_app.custom_check_invoice.check_overdue_invoice",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -143,46 +142,3 @@ app_license = "MIT"
 # 	"Task": "overdue_app.task.get_dashboard_data"
 # }
 
-# exempt linked doctypes from being automatically cancelled
-#
-# auto_cancel_exempted_doctypes = ["Auto Repeat"]
-
-
-# User Data Protection
-# --------------------
-
-user_data_fields = [
-	{
-		"doctype": "{doctype_1}",
-		"filter_by": "{filter_by}",
-		"redact_fields": ["{field_1}", "{field_2}"],
-		"partial": 1,
-	},
-	{
-		"doctype": "{doctype_2}",
-		"filter_by": "{filter_by}",
-		"partial": 1,
-	},
-	{
-		"doctype": "{doctype_3}",
-		"strict": False,
-	},
-	{
-		"doctype": "{doctype_4}"
-	}
-]
-
-# Authentication and authorization
-# --------------------------------
-
-# auth_hooks = [
-# 	"overdue_app.auth.validate"
-# ]
-
-# Translation
-# --------------------------------
-
-# Make link fields search translated document names for these DocTypes
-# Recommended only for DocTypes which have limited documents with untranslated names
-# For example: Role, Gender, etc.
-# translated_search_doctypes = []
